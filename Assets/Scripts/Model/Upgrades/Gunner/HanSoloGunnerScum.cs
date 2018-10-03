@@ -43,31 +43,29 @@ namespace Abilities.SecondEdition
             
         public override void ActivateAbility() 
             {
-                HostShip.OnCombatActivationGlobal += CheckAbility;
+                HostShip.OnCombatActivation += CheckAbility;
                 Phases.Events.OnRoundEnd += RemoveHanSoloGunnerScumAbility;
             }
 
         public override void DeactivateAbility()
             {
-  
+                HostShip.OnCombatActivation -= CheckAbility;
             }
             
         private void CheckAbility(HostShip.OnCombatActivationGlobal)
             {
-                if (HostShip.Tokens.HasToken(typeof(StressToken))) return;
                 RegisterAbilityTrigger(TriggerTypes.OnCombatActivation, AskAbility);
             }
         private void AskAbility(object sender, System.EventArgs e)
             {
-                Messages.ShowInfo("Do you want to use Han Solo Gunner (Scum) Ability?");
-                AskToUseAbility(UseAbility, DontUseAbility);
+                AskToUseAbility(UseAbility, DontUseAbility);   
             }
         private void UseAbility(object sender, System.EventArgs e)
             {
                 if (!HostShip.Tokens.HasToken(typeof(StressToken)))
                     {
                         HostShip.Tokens.AssignToken(typeof(StressToken), AssignConditionToActivatedShip);
-                        HostShip.Tokens.Assigntoken(typeof(FocusToken), AssignConditionToActivatedShip);
+                        HostShip.AskPerformFreeAction(new FocusAction() { IsRed = true }, Triggers.FinishTrigger);
                     }
                 else
                     {
@@ -77,7 +75,7 @@ namespace Abilities.SecondEdition
             }
         private void DontUseAbility(object sender, System.EventArgs e)
             {          
-                DecisionSubPhase.ConfirmDecision();
+                DecisionSubPhase.ConfirmDecision(); 
             }
     }
 }
